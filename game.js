@@ -19,6 +19,8 @@ let blockSpawnInterval = 1500;
 let lastSpawn = 0;
 let score = 0;
 let gameOver = false;
+let isRunning = false;
+let animationId;
 
 function drawPlayer() {
   ctx.fillStyle = '#0af';
@@ -46,7 +48,7 @@ function spawnBlock() {
   blocks.push({ x, y: -50, width, height: 20 });
 }
 
-function updateBlocks(deltaTime) {
+function updateBlocks() {
   for (let i = blocks.length - 1; i >= 0; i--) {
     blocks[i].y += blockSpeed;
 
@@ -54,9 +56,9 @@ function updateBlocks(deltaTime) {
       blocks.splice(i, 1);
       score++;
       scoreDisplay.textContent = `Score: ${score}`;
-      if(score % 5 === 0 && blockSpeed < 12) {
-        blockSpeed += 0.5;  // Tingkatkan kecepatan setiap 5 skor
-        if(blockSpawnInterval > 500) blockSpawnInterval -= 100; // Percepat spawn
+      if (score % 5 === 0 && blockSpeed < 12) {
+        blockSpeed += 0.5;
+        if (blockSpawnInterval > 500) blockSpawnInterval -= 100;
       }
     }
   }
@@ -79,19 +81,7 @@ function checkCollision() {
 let lastTime = 0;
 
 function gameLoop(timestamp = 0) {
-  if (gameOver) {
-    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#fff';
-    ctx.font = '36px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Game Over!', canvas.width / 2, canvas.height / 2 - 20);
-    ctx.font = '24px Arial';
-    ctx.fillText(`Your Score: ${score}`, canvas.width / 2, canvas.height / 2 + 20);
-    startBtn.disabled = false;
-    startBtn.textContent = 'Restart Game';
-    return;
-  }
+  if (!isRunning) return;
 
   clear();
   updatePlayer();
@@ -102,16 +92,42 @@ function gameLoop(timestamp = 0) {
     lastSpawn = timestamp;
   }
 
-  updateBlocks(timestamp - lastTime);
+  updateBlocks();
   blocks.forEach(drawBlock);
 
   if (checkCollision()) {
     gameOver = true;
-  } else {
-    requestAnimationFrame(gameLoop);
+    isRunning = false;
+    cancelAnimationFrame(animationId);
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#fff';
+    ctx.font = '36px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Game Over!', canvas.width / 2, canvas.height / 2 - 20);
+    ctx.font = '24px Arial';
+    ctx.fillText(`Your Score: ${score}`, canvas.width / 2, canvas.height / 2 + 20);
+    startBtn.textContent = 'Restart Game';
+    return;
   }
 
+  animationId = requestAnimationFrame(gameLoop);
   lastTime = timestamp;
+}
+
+function resetGame() {
+  cancelAnimationFrame(animationId);
+  blocks = [];
+  blockSpeed = 3;
+  blockSpawnInterval = 1500;
+  lastSpawn = 0;
+  score = 0;
+  gameOver = false;
+  isRunning = true;
+  player.x = canvas.width / 2 - player.width / 2;
+  scoreDisplay.textContent = `Score: 0`;
+  startBtn.textContent = 'Restart Game';
+  requestAnimationFrame(gameLoop);
 }
 
 function keyDownHandler(e) {
@@ -131,20 +147,6 @@ function keyUpHandler(e) {
   ) {
     player.dx = 0;
   }
-}
-
-function resetGame() {
-  blocks = [];
-  blockSpeed = 3;
-  blockSpawnInterval = 1500;
-  lastSpawn = 0;
-  score = 0;
-  gameOver = false;
-  player.x = canvas.width / 2 - player.width / 2;
-  scoreDisplay.textContent = `Score: 0`;
-  startBtn.disabled = true;
-  startBtn.textContent = 'Playing...';
-  requestAnimationFrame(gameLoop);
 }
 
 document.addEventListener('keydown', keyDownHandler);
