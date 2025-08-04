@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dodge The Blocks</title>
+  <style>
+    * { margin:0; padding:0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      user-select: none;
+      overflow: hidden;
+    }
+    canvas {
+      background: #111;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #08f;
+    }
+    #score {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 0 0 10px #0ff;
+    }
+    #startBtn {
+      position: absolute;
+      bottom: 30px;
+      background: #0ff;
+      color: #111;
+      border: none;
+      padding: 12px 24px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 12px #0ff;
+      transition: background-color 0.3s ease;
+    }
+    #startBtn:hover {
+      background: #09c;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="score">Score: 0</div>
+  <button id="startBtn">Start Game</button>
+  <canvas id="gameCanvas" width="400" height="600"></canvas>
+
+  <script src="game.js"></script>
+</body>
+</html>
